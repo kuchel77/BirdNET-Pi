@@ -53,6 +53,7 @@ if [[ "$apprise_installation_status" = "not installed" ]];then
   ~/BirdNET-Pi/birdnet/bin/pip3 install -U pip
   ~/BirdNET-Pi/birdnet/bin/pip3 install apprise
 fi
+
 [ -f $HOME/BirdNET-Pi/apprise.txt ] || sudo -E -u$USER touch $HOME/BirdNET-Pi/apprise.txt
 if ! which lsof &>/dev/null;then
   sudo apt update && sudo apt -y install lsof
@@ -83,6 +84,12 @@ fi
 
 if ! grep FLICKR_FILTER_EMAIL /etc/birdnet/birdnet.conf &>/dev/null;then
   sudo -u$USER echo "FLICKR_FILTER_EMAIL=" >> /etc/birdnet/birdnet.conf
+fi
+
+flask_installation_status=$(~/BirdNET-Pi/birdnet/bin/python3 -c 'import pkgutil; print("installed" if pkgutil.find_loader("flask") else "not installed")')
+if [[ "$flask_installation_status" = "not installed" ]];then
+  $HOME/BirdNET-Pi/birdnet/bin/pip3 install -U pip
+  $HOME/BirdNET-Pi/birdnet/bin/pip3 install Flask Flask-Cors
 fi
 
 if ! [ -L /lib/systemd/system/birdnet_api.service ];then
