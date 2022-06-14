@@ -85,5 +85,21 @@ if ! grep FLICKR_FILTER_EMAIL /etc/birdnet/birdnet.conf &>/dev/null;then
   sudo -u$USER echo "FLICKR_FILTER_EMAIL=" >> /etc/birdnet/birdnet.conf
 fi
 
+if ! [ -L /lib/systemd/system/birdnet_api.service ];then
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_api.service
+[Unit]
+Description=BirdNET API
+[Service]
+Restart=on-failure
+RestartSec=3
+Type=simple
+User=birdie
+ExecStart=$HOME/BirdNET-Pi/birdnet/bin/python3 /usr/local/bin/api.py
+[Install]
+WantedBy=multi-user.target
+EOF
+  sudo ln -sf $HOME/BirdNET-Pi/templates/birdnet_api.service /lib/systemd/system
+fi
+
 sudo systemctl daemon-reload
 restart_services.sh
